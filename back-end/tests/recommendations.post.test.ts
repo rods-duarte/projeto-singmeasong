@@ -98,13 +98,6 @@ describe('upvoting recommendation tests', () => {
     expect(response.status).toBe(404);
   });
 
-  it('given a invalid recommendation id should return error, expect 422', async () => {
-    const response = await supertest(app).post(
-      '/recommendations/invalid/upvote'
-    );
-    expect(response.status).toBe(422);
-  });
-
   it('given a valid recommendation id should upvote, expect 200', async () => {
     const recommendation = await recommendationFactory.createRecommendation();
 
@@ -117,6 +110,27 @@ describe('upvoting recommendation tests', () => {
       where: { id: recommendation.id },
     });
     expect(recommendationUpvoted.score).toBe(1);
+  });
+});
+
+describe('downvoting recommendation tests', () => {
+  it('given a non existing recommendation id should return error, expect 404', async () => {
+    const response = await supertest(app).post('/recommendations/0/downvote');
+    expect(response.status).toBe(404);
+  });
+
+  it('given a valid recommendation id should upvote, expect 200', async () => {
+    const recommendation = await recommendationFactory.createRecommendation();
+
+    const response = await supertest(app).post(
+      `/recommendations/${recommendation.id}/downvote`
+    );
+    expect(response.status).toBe(200);
+
+    const recommendationUpvoted = await prisma.recommendation.findFirst({
+      where: { id: recommendation.id },
+    });
+    expect(recommendationUpvoted.score).toBe(-1);
   });
 });
 
