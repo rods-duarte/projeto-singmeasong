@@ -12,16 +12,12 @@ export function createRecommendationData(
   };
 }
 
-export async function createRecommendation(
-  { name, youtubeLink }: CreateRecommendationData = {
-    name: faker.music.songName(),
-    youtubeLink: `https://www.youtube.com/${faker.random.alpha()}`,
-  }
-) {
+export async function createRecommendation(name = null, youtubeLink = null) {
   const recommendation = await prisma.recommendation.create({
     data: {
-      name,
-      youtubeLink,
+      name: name || faker.music.songName(),
+      youtubeLink:
+        youtubeLink || `https://www.youtube.com/${faker.random.alpha()}`,
     },
   });
   return recommendation;

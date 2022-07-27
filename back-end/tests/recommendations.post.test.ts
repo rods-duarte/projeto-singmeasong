@@ -1,11 +1,12 @@
 import supertest from 'supertest';
+import { faker } from '@faker-js/faker';
 import { prisma } from '../src/database.js';
 import app from '../src/app.js';
 import recommendationFactory from './factories/recommendationFactory.js';
-import scenarioFactory from './factories/scenarioFactory.js';
+import scenario from './factories/scenarioFactory.js';
 
-beforeEach(() => {
-  scenarioFactory.clearRecommendations();
+beforeEach(async () => {
+  await scenario.clearRecommendations();
 });
 
 describe('create music recommendation tests', () => {
@@ -58,9 +59,10 @@ describe('create music recommendation tests', () => {
   });
 
   it('given name in use should not create, expect 409', async () => {
-    const recommendationData =
-      recommendationFactory.createRecommendationData('name');
-    await recommendationFactory.createRecommendation(recommendationData);
+    const recommendationData = recommendationFactory.createRecommendationData(
+      faker.music.songName()
+    );
+    await recommendationFactory.createRecommendation(recommendationData.name);
 
     const response = await supertest(app)
       .post('/recommendations')
@@ -149,6 +151,6 @@ describe('downvoting recommendation tests', () => {
   });
 });
 
-afterAll(() => {
-  scenarioFactory.clearRecommendations();
+afterAll(async () => {
+  await scenario.clearRecommendations();
 });
