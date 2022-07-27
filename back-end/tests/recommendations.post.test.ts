@@ -132,6 +132,21 @@ describe('downvoting recommendation tests', () => {
     });
     expect(recommendationUpvoted.score).toBe(-1);
   });
+
+  it('given a recommendation with -5 score should delete, expect 200', async () => {
+    const recommendation = await recommendationFactory.createRecommendation();
+    await recommendationFactory.updateScore(-5, recommendation.id);
+
+    const response = await supertest(app).post(
+      `/recommendations/${recommendation.id}/downvote`
+    );
+    expect(response.status).toBe(200);
+
+    const recommendationDeleted = await prisma.recommendation.findFirst({
+      where: { id: recommendation.id },
+    });
+    expect(recommendationDeleted).toBe(null);
+  });
 });
 
 afterAll(() => {

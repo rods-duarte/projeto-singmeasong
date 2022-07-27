@@ -27,9 +27,17 @@ export async function createRecommendation(
   return recommendation;
 }
 
+export async function updateScore(newScore: number, id: number) {
+  await prisma.recommendation.update({
+    where: { id },
+    data: { score: newScore },
+  });
+}
+
 const recommendationFactory = {
   createRecommendationData,
   createRecommendation,
+  updateScore,
 };
 
 export default recommendationFactory;
