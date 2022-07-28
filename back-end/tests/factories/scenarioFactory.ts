@@ -5,16 +5,28 @@ async function clearRecommendations() {
   await prisma.recommendation.deleteMany();
 }
 
-async function withRecommendationsCreated(quantity = 11) {
-  const promises = [];
-  for (let i = 0; i < quantity; i++)
-    promises.push(recommendationFactory.createRecommendation(String(i)));
-  await Promise.all(promises);
+async function withThreeRecommendationsAndDifferentScores(
+  score1: number,
+  score2: number,
+  score3: number
+) {
+  const recommendations = [
+    recommendationFactory.createRecommendation('one', null, score1),
+    recommendationFactory.createRecommendation('two', null, score2),
+    recommendationFactory.createRecommendation('three', null, score3),
+  ];
+
+  await Promise.all(recommendations);
+}
+
+async function withTenRecommendationsAndRandomScores() {
+  await recommendationFactory.createManyRecommendations(10);
 }
 
 const scenario = {
   clearRecommendations,
-  withRecommendationsCreated,
+  withThreeRecommendationsAndDifferentScores,
+  withTenRecommendationsAndRandomScores,
 };
 
 export default scenario;

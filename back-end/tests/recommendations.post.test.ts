@@ -111,7 +111,7 @@ describe('upvoting recommendation tests', () => {
     const recommendationUpvoted = await prisma.recommendation.findFirst({
       where: { id: recommendation.id },
     });
-    expect(recommendationUpvoted.score).toBe(1);
+    expect(recommendationUpvoted.score).toBe(recommendation.score + 1);
   });
 });
 
@@ -121,7 +121,7 @@ describe('downvoting recommendation tests', () => {
     expect(response.status).toBe(404);
   });
 
-  it('given a valid recommendation id should upvote, expect 200', async () => {
+  it('given a valid recommendation id should downvote, expect 200', async () => {
     const recommendation = await recommendationFactory.createRecommendation();
 
     const response = await supertest(app).post(
@@ -132,7 +132,7 @@ describe('downvoting recommendation tests', () => {
     const recommendationUpvoted = await prisma.recommendation.findFirst({
       where: { id: recommendation.id },
     });
-    expect(recommendationUpvoted.score).toBe(-1);
+    expect(recommendationUpvoted.score).toBe(recommendation.score - 1);
   });
 
   it('given a recommendation with -5 score should delete, expect 200', async () => {

@@ -2,7 +2,7 @@ import supertest from 'supertest';
 import scenario from './factories/scenarioFactory';
 import app from '../src/app.js';
 import recommendationFactory from './factories/recommendationFactory';
-// import { prisma } from '../src/database.js';
+import { prisma } from '../src/database.js';
 
 beforeEach(async () => {
   await scenario.clearRecommendations();
@@ -10,7 +10,7 @@ beforeEach(async () => {
 
 describe('get music recommendations tests', () => {
   it('should return 10 recommendations, expect 200', async () => {
-    await scenario.withRecommendationsCreated(11);
+    await recommendationFactory.createManyRecommendations(11);
 
     const response = await supertest(app).get('/recommendations');
     expect(response.status).toBe(200);
@@ -23,7 +23,7 @@ describe('get music recommendations tests', () => {
 
   it('should return all recommendations, expect 200', async () => {
     const num = Math.ceil(Math.random() * 10);
-    await scenario.withRecommendationsCreated(num);
+    await recommendationFactory.createManyRecommendations(num);
 
     const response = await supertest(app).get('/recommendations');
     expect(response.status).toBe(200);
@@ -54,6 +54,44 @@ describe('get music recommendation by id tests', () => {
     expect(name).toBe(undefined);
     expect(youtubeLink).toBe(undefined);
     expect(score).toBe(undefined);
+  });
+});
+
+describe('get a random music recommendation', () => {
+  it('given several requests should return a music reccomendation with 10+ upvotes ~ 70% of the time, expect 200', async () => {
+    await scenario.withThreeRecommendationsAndDifferentScores(-5, 0, 15);
+
+    const total = 100;
+    let scoreHigherThan10 = 0;
+    for (let i = 0; i < total; i++) {
+      const response = await supertest(app).get('/recommendations/random');
+      expect(response.status).toBe(200);
+      if (response.body.score > 10) scoreHigherThan10++;
+    }
+
+    expect(scoreHigherThan10).toBeGreaterThanOrEqual(65);
+    expect(scoreHigherThan10).toBeLessThanOrEqual(75);
+  });
+
+  it('given no recommendation registered should return nothing, expect 404', async () => {
+    const response = await supertest(app).get('/recommendations/random');
+    const { id, name, youtubeLink, score } = response.body;
+    expect(response.status).toBe(404);
+    expect(id).toBe(undefined);
+    expect(name).toBe(undefined);
+    expect(youtubeLink).toBe(undefined);
+    expect(score).toBe(undefined);
+  });
+
+  it('should return a music recommendation, expect 200', async () => {
+    await scenario.withThreeRecommendationsAndDifferentScores(15, 200, 105);
+    const response = await supertest(app).get('/recommendations/random');
+    const { id, name, youtubeLink, score } = response.body;
+    expect(response.status).toBe(200);
+    expect(id).not.toBe(undefined);
+    expect(name).not.toBe(undefined);
+    expect(youtubeLink).not.toBe(undefined);
+    expect(score).not.toBe(undefined);
   });
 });
 
