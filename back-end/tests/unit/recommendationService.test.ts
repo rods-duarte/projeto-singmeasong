@@ -33,6 +33,37 @@ describe('recommendation service unit tests', () => {
       expect(promise).rejects.toEqual(notFoundError());
     });
   });
+
+  describe('insert tests', () => {
+    it('given a non existing recommendation should call repository', async () => {
+      jest
+        .spyOn(recommendationRepository, 'findByName')
+        .mockResolvedValueOnce(null);
+      jest
+        .spyOn(recommendationRepository, 'create')
+        .mockResolvedValueOnce(null);
+
+      await recommendationService.insert({ name: 'aa', youtubeLink: 'aa' });
+      expect(recommendationRepository.create).toBeCalled();
+    });
+
+    it('given a existing recommendation should throw conflict error', async () => {
+      jest.spyOn(recommendationRepository, 'findByName').mockResolvedValueOnce({
+        id: 1,
+        name: 'aa',
+        score: 1,
+        youtubeLink: 'aaa',
+      });
+
+      const promise = recommendationService.insert({
+        name: 'name',
+        youtubeLink: 'link',
+      });
+      expect(promise).rejects.toEqual(
+        conflictError('Recommendations names must be unique')
+      );
+    });
+  });
 });
 
 afterAll(async () => {
