@@ -3,6 +3,7 @@ import scenario from './factories/scenarioFactory';
 import app from '../src/app.js';
 import recommendationFactory from './factories/recommendationFactory';
 import { prisma } from '../src/database.js';
+import { getRandomNumber } from './testUtils';
 
 beforeEach(async () => {
   await scenario.clearRecommendations();
@@ -57,7 +58,7 @@ describe('get music recommendation by id tests', () => {
   });
 });
 
-describe('get a random music recommendation', () => {
+describe('get a random music recommendation tests', () => {
   it('given several requests should return a music reccomendation with 10+ upvotes ~ 70% of the time, expect 200', async () => {
     await scenario.withThreeRecommendationsAndDifferentScores(-5, 0, 15);
 
@@ -85,6 +86,7 @@ describe('get a random music recommendation', () => {
 
   it('should return a music recommendation, expect 200', async () => {
     await scenario.withThreeRecommendationsAndDifferentScores(15, 200, 105);
+
     const response = await supertest(app).get('/recommendations/random');
     const { id, name, youtubeLink, score } = response.body;
     expect(response.status).toBe(200);
@@ -92,6 +94,26 @@ describe('get a random music recommendation', () => {
     expect(name).not.toBe(undefined);
     expect(youtubeLink).not.toBe(undefined);
     expect(score).not.toBe(undefined);
+  });
+});
+
+describe('get top upvoted recommendations tests', () => {
+  it('should return the recommendations list within the amount informed, expect 200', async () => {
+    const amount = getRandomNumber(1, 10);
+    await recommendationFactory.createManyRecommendations(amount);
+
+    const response = await supertest(app).get(`/recommendations/top/${amount}`);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(amount);
+  });
+
+  it('given a value greater than the amount of recommendations stored should return all, expect 200', async () => {
+    const amount = 999;
+    await recommendationFactory.createManyRecommendations(10);
+
+    const response = await supertest(app).get(`/recommendations/top/${amount}`);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(10);
   });
 });
 
