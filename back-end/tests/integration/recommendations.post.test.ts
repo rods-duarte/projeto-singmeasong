@@ -22,7 +22,7 @@ describe('create music recommendation tests', () => {
     const recommendationCreated = await prisma.recommendation.findFirst({
       where: recommendationData,
     });
-    expect(recommendationCreated).toBe(null);
+    expect(recommendationCreated).toBeNull();
   });
 
   it('missing youtube link string should not create, expect 422', async () => {
@@ -39,7 +39,7 @@ describe('create music recommendation tests', () => {
     const recommendationCreated = await prisma.recommendation.findFirst({
       where: recommendationData,
     });
-    expect(recommendationCreated).toBe(null);
+    expect(recommendationCreated).toBeNull();
   });
 
   it('given a non youtube link should not create, expect 422', async () => {
@@ -55,7 +55,7 @@ describe('create music recommendation tests', () => {
     const recommendationCreated = await prisma.recommendation.findFirst({
       where: recommendationData,
     });
-    expect(recommendationCreated).toBe(null);
+    expect(recommendationCreated).toBeNull();
   });
 
   it('given name in use should not create, expect 409', async () => {
@@ -147,7 +147,7 @@ describe('downvoting recommendation tests', () => {
     const recommendationDeleted = await prisma.recommendation.findFirst({
       where: { id: recommendation.id },
     });
-    expect(recommendationDeleted).toBe(null);
+    expect(recommendationDeleted).toBeNull();
   });
 });
 
