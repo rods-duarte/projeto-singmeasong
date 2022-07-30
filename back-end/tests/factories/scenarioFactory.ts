@@ -5,7 +5,7 @@ async function clearRecommendations() {
   await prisma.recommendation.deleteMany();
 }
 
-async function withThreeRecommendationsAndDifferentScores(
+async function withThreeRecommendationsAndSetScores(
   score1: number,
   score2: number,
   score3: number
@@ -25,7 +25,7 @@ async function withTenRecommendationsAndRandomScores() {
 
 const scenario = {
   clearRecommendations,
-  withThreeRecommendationsAndDifferentScores,
+  withThreeRecommendationsAndSetScores,
   withTenRecommendationsAndRandomScores,
 };
 
