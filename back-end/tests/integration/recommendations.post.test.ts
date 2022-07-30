@@ -1,9 +1,9 @@
 import supertest from 'supertest';
 import { faker } from '@faker-js/faker';
-import { prisma } from '../src/database.js';
-import app from '../src/app.js';
-import recommendationFactory from './factories/recommendationFactory.js';
-import scenario from './factories/scenarioFactory.js';
+import { prisma } from '../../src/database.js';
+import app from '../../src/app.js';
+import recommendationFactory from '../factories/recommendationFactory.js';
+import scenario from '../factories/scenarioFactory.js';
 
 beforeEach(async () => {
   await scenario.clearRecommendations();
