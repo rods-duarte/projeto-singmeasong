@@ -66,7 +66,7 @@ describe('recommendation service unit tests', () => {
 
     it('given no recommendation registered should throw not found error', async () => {
       jest.spyOn(Math, 'random').mockImplementationOnce(() => 0.69);
-      jest.spyOn(recommendationRepository, 'findAll').mockResolvedValueOnce([]);
+      jest.spyOn(recommendationRepository, 'findAll').mockResolvedValue([]);
 
       const promise = recommendationService.getRandom();
       expect(promise).rejects.toEqual(notFoundError());
