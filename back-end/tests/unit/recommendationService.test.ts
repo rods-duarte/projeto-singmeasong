@@ -135,4 +135,75 @@ describe('recommendation service unit tests', () => {
       );
     });
   });
+
+  describe('voting tests', () => {
+    it('should upvote', async () => {
+      const recommendation: Recommendation = {
+        id: 1,
+        name: 'name',
+        youtubeLink: 'link',
+        score: 10,
+      };
+      jest
+        .spyOn(recommendationRepository, 'find')
+        .mockResolvedValueOnce(recommendation);
+      jest
+        .spyOn(recommendationRepository, 'updateScore')
+        .mockResolvedValueOnce(null);
+
+      await recommendationService.upvote(recommendation.id);
+      expect(recommendationRepository.updateScore).toBeCalledWith(
+        recommendation.id,
+        'increment'
+      );
+    });
+
+    it('should downvote', async () => {
+      const recommendation: Recommendation = {
+        id: 1,
+        name: 'name',
+        youtubeLink: 'link',
+        score: 10,
+      };
+      jest
+        .spyOn(recommendationRepository, 'find')
+        .mockResolvedValueOnce(recommendation);
+      jest
+        .spyOn(recommendationRepository, 'updateScore')
+        .mockResolvedValueOnce({
+          ...recommendation,
+          score: recommendation.score - 1,
+        });
+
+      await recommendationService.downvote(recommendation.id);
+      expect(recommendationRepository.updateScore).toBeCalledWith(
+        recommendation.id,
+        'decrement'
+      );
+    });
+
+    it('given a recommendation with -5 score should be deleted when downvoting', async () => {
+      const recommendation: Recommendation = {
+        id: 1,
+        name: 'name',
+        youtubeLink: 'link',
+        score: -5,
+      };
+      jest
+        .spyOn(recommendationRepository, 'find')
+        .mockResolvedValueOnce(recommendation);
+      jest
+        .spyOn(recommendationRepository, 'updateScore')
+        .mockResolvedValueOnce({
+          ...recommendation,
+          score: recommendation.score - 1,
+        });
+      jest
+        .spyOn(recommendationRepository, 'remove')
+        .mockResolvedValueOnce(null);
+
+      await recommendationService.downvote(recommendation.id);
+      expect(recommendationRepository.remove).toBeCalledWith(recommendation.id);
+    });
+  });
 });
