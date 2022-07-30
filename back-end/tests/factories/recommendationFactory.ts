@@ -23,7 +23,7 @@ async function createRecommendation(
       name: name || faker.music.songName(),
       youtubeLink:
         youtubeLink || `https://www.youtube.com/${faker.random.alpha()}`,
-      score: score || getRandomNumber(-5, 10),
+      score: score || getRandomNumber(-4, 10),
     },
   });
   return recommendation;
