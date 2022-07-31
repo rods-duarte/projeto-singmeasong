@@ -1,25 +1,24 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import { faker } from "@faker-js/faker";
+
+const URL = "http://localhost:3000/";
+const API_URL = "http://localhost:5000/";
+
+Cypress.Commands.add(
+  "createRecommendation",
+  (
+    name = faker.music.songName(),
+    link = `https://www.youtube.com/${faker.random.alpha()}`
+  ) => {
+    cy.visit(URL);
+    if (name) cy.get("#name").type(name);
+    if (link) cy.get("#link").type(link);
+
+    cy.intercept("POST", "/recommendations").as("postRecommendation");
+    cy.get("#submit").click();
+    cy.wait("@postRecommendation");
+  }
+);
+
+Cypress.Commands.add("clearDatabase", () => {
+  cy.request("post", `http://localhost:5000/recommendations/clear`);
+});

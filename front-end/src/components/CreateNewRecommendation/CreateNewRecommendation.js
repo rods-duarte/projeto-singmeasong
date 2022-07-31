@@ -22,6 +22,7 @@ export default function CreateNewRecommendation({
   return (
     <Container>
       <Input
+        id="name"
         type="text"
         placeholder="Name"
         value={name}
@@ -29,13 +30,18 @@ export default function CreateNewRecommendation({
         disabled={disabled}
       />
       <Input
+        id="link"
         type="text"
         placeholder="https://youtu.be/..."
         value={link}
         onChange={(e) => setLink(e.target.value)}
         disabled={disabled}
       />
-      <Button onClick={() => handleCreateRecommendation()} disabled={disabled}>
+      <Button
+        id="submit"
+        onClick={() => handleCreateRecommendation()}
+        disabled={disabled}
+      >
         <IoReturnUpForwardOutline size="24px" color="#fff" />
       </Button>
     </Container>
